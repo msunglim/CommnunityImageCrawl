@@ -1,0 +1,70 @@
+1. 검색어에서 여러 이미지들이있다.
+2. 이미지 자체의 url과 이름을 추출하고, 거기서 관련이미지 see more을 추출한뒤,
+그곳으로 향한다.
+
+(관련이미지 tag a , class wXeWr islib nfEiy  추출대상 href
+
+->추출한곳으로 가서 see more로 들어가야함.)
+
+.........
+1. 환경변수설정을 최상위디렉토리로 (보통 프로젝트폴더)
+2. 그안에 src를 만들고 그안에 go파일을 만드셈
+3. go build ㅋㅋㅋ.go; .\ㅋㅋㅋ 해봐. 안되면 cmd로해보셈
+ㅡㅡㅡㅡㅡㅡ
+gopath/src/여따가 package이름한뒤 go install
+하고 그 패키지를 사용할 폴더로가서 go install 패키지이름.
+
+하면댐
+그리고 import할때 ./패키지이름 해줘야함 ㅇㅇ
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+다른데서 사용될 variable/method들은 앞글자가 무조건적으로 대문자여야한다.
+.
+일단.. 관련이미ㅈㅣ는 못 모을듯.. 
+
+https://www.google.com/search?q=%EC%8A%A4%EC%9A%B0&tbm=isch
+->
+https://www.google.com/search?q=%EC%8A%A4%EC%9A%B0&tbm=isch#imgrc=x9-Z1cMRG3qHYM
+
+data-id에 있어요 ㅋㅋㅋ 
+
+
+여기서 추출하면될듯해요 ㅋㅋㅋㅋ악ㅋㅋㅋㅋㅋㅋㅋㅋ  야 기분좋다~~~
+
+1. 검색결과들 
+img tag 에서 class =rg_i Q4LuWd 인것에서 src 값을 추출
+
+2. 관련이미지들 
+class isv-r PNCib MSM1fd BUooTd 인거에 data-id인것이에요.. ㅎㅎ 여기서 저거 추출한뒤 현재url에 다가 #imgrc= 붙이고 저값붙이면 see more 떠요 ㅋㅋ 
+거기서 see more 은..
+
+a tag -> class=  Sa2Wmf MIdC8d jwwPNd 인것의 href 값.. ㅋㅋㅋㅋㅋ으로 가면되요 ㅋㅋㅋ 
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+1. 검색어의 url로 이동.
+2. 모든 이미지들 채널에 전송
+3. 모든이미지의 관련이미지들 url로이동 -> 이걸 노드로 얻고.. 파싱한것으로.. see more로 가고 그걸 노드로 얻고 그걸 파싱하는거임ㅇㅇㅋㅋ
+4.  see more이 가르키고있는 url로 이동..
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+ㅋㅋㅋㅋㅋㅋ위에거 전부 폐기해야하는게 robots.txt에 막힘ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ
+개웃기노
+꿩대신 닭이라고 ... 아카라이브라도 크롤링어때. ㅋㅋㅋ
+
+div 태그에 class 가 fr-view article content에 하위 <p>들이 있을텐데, 그것의 child까지가서 img태그에 src를 불러와 
+a 테그에 class 가 vrow인것에 href 값을 url 체널에 보내고.. 거기로 워프타
+
+ㅋㅋㅋㅋㅋㅋ
+
+제목과 이미지들을 같이 주고 싶으면.. obj 형식으로 줘도 될거같은데.. 체널을 obj로 만들어서 줘야지 따로주면 싱크안맞음...ㅠ
+
+*못찾는게있으면 그것의 자식, 부모를 찾아보자.. a tag는 못찾는걸 확인했어.. 구글이미지처럼 아예 괴상한값을 주는게아니라 그냥 인식을 못했을때..
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+오늘은 scan으로 사출할 페이지만 정의하시죠
+터미널에 복/붙은 ctrl+ shift+c / ctrl+shift+v다 ㅋㅋ
+
+li tag class = page-item 의 자식인 class = page-link 의 href로 이동.
+단, 그것의 page-itme active가 아니어야한다
+이것을 추적하는 방법으로는 , 
+for로 끝까지 돌리기전, 일단 tf =false로시작
+page-item active 가 뜨면 tf = true로 바꾸고
+그 이후 나오는 page-item들의 href 를 Request에 보낸다.
