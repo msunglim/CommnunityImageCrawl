@@ -2,15 +2,20 @@ package main
 
 import (
 	. "fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"pipeline"
 	"runtime"
+	"strconv"
 	"sync"
 
 	"golang.org/x/net/html"
 )
+
+var mainUrl string
 
 //현재 url을 html.Node 포인터로 리턴해줌. 그 Node로 .Data, Type 이런걸 추출 할 수 있음.
 func fetch(url string) (*html.Node, error) {
@@ -175,11 +180,13 @@ func (g *PostSearch) Parse(doc *html.Node) <-chan string { //receive 전용체�
 								}
 								if n.Parent.Parent.Attr[0].Key == "class" && n.Parent.Parent.Attr[0].Val != "vrow notice notice-service" && n.Parent.Parent.Attr[0].Val != "vrow notice notice-board" && n.Parent.Parent.Attr[0].Val != "vrow notice notice-board filtered filtered-notice" {
 									count++
-									Println("parse count ", count, "https://arca.live"+n.Parent.Parent.Attr[1].Val)
+									//	Println("parse count ", count, "https://arca.live"+n.Parent.Parent.Attr[1].Val)
 
 									postUrl <- "https://arca.live" + n.Parent.Parent.Attr[1].Val
 
-									g.Request("https://arca.live/b/genshin?p=6")
+									for i := 2; i <= 10; i++ {
+										g.Request(mainUrl + "?p=" + strconv.Itoa(i))
+									}
 
 									g.image.Request("https://arca.live" + n.Parent.Parent.Attr[1].Val)
 									break
@@ -260,9 +267,8 @@ func main() {
 	numCPUs := runtime.NumCPU()
 	runtime.GOMAXPROCS(numCPUs)
 
-	var url string
 	Println("Please type the url of a website that you want to crawl.")
-	Scan(&url)
+	Scan(&mainUrl)
 	p := pipeline.NewPipeline()
 	p.Run()
 
@@ -271,36 +277,40 @@ func main() {
 		fetchedImageUrl: &FetchedImageUrl{m: make(map[string]struct{})},
 		p:               p,
 		result:          make(chan ImageResult),
-		url:             url,
+		url:             mainUrl,
 	}
 	post := &PostSearch{
 		fetchedUrl: &FetchedUrl{m: make(map[string]error)},
 		p:          p,
 		image:      image,
 		result:     make(chan PostResult),
-		url:        url,
+		url:        mainUrl,
 	}
 	p.Request <- post
 	count := 0
+
 	// LOOP:
 	for {
 		select {
 		case f := <-image.result:
 			//Println(f.url)
-			//openbrowser(f.url)
+			// openbrowser(f.imageUrl)
 			// for _, v := range f.imageUrl {
 			// 	Println("\t\t", v)
 			// }
 			Println("\t\t", f.imageUrl)
+			var cstr string = strconv.Itoa(count)
+			downloadFile(f.imageUrl, cstr+".png")
+
 			//			Println("count", count)
 			if count == 30 {
 				Println("종료됨")
 				//	close(p.Done)
 				// break LOOP
 			}
-			//count++
+			count++
 		case p := <-post.result:
-			// Println(p.postUrl)
+			Println(p.postUrl)
 			openbrowser(p.postUrl)
 			// for _, v := range p.postUrl {
 			// 	Println("\t\t", v)
@@ -316,6 +326,39 @@ func main() {
 	}
 }
 
+func downloadFile(url, fileName string) error {
+	if url[0] != '/' {
+		Println("kusoga:", url)
+		return nil
+	}
+	url = "https:" + url
+	//Get the response bytes from the url
+	Println("다운시도", url, fileName)
+	// url := "http://i.imgur.com/m1UIjW1.jpg"
+	// don't worry about errors
+	response, e := http.Get(url)
+	if e != nil {
+		log.Fatal(e)
+	}
+	defer response.Body.Close()
+
+	//open a file for writing
+	file, err := os.Create(fileName)
+	if err != nil {
+		Println("3")
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	// Use io.Copy to just dump the response body to the file. This supports huge files
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	Println("성공..?", url)
+	return nil
+}
 func openbrowser(url string) {
 	if len(url) == 0 {
 		return
